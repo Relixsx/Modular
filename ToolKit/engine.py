@@ -44,42 +44,26 @@ def train_step(model: torch.nn.Module,
 
         if schedular_lr:
     
-          # 1. Forward pass
-          y_pred = model(X)
+        # 1. Forward pass
+        y_pred = model(X)
   
-          # 2. Calculate  and accumulate loss
-          loss = loss_fn(y_pred, y)
-          train_loss += loss.item() 
+        # 2. Calculate  and accumulate loss
+        loss = loss_fn(y_pred, y)
+        train_loss += loss.item() 
   
-          # 3. Optimizer zero grad
-          optimizer.zero_grad()
+        # 3. Optimizer zero grad
+        optimizer.zero_grad()
   
-          # 4. Loss backward
-          loss.backward()
+        # 4. Loss backward
+        loss.backward()
   
-          # 5. Optimizer step
-          optimizer.step()
+        # 5. Optimizer step
+        optimizer.step()
   
-          # Scheduler_Learning rate
+        # Schedular_Learning rate
+        if schedular_lr is not None:
           schedular_lr.step()
-        else:
           
-          # 1. Forward pass
-          y_pred = model(X)
-  
-          # 2. Calculate  and accumulate loss
-          loss = loss_fn(y_pred, y)
-          train_loss += loss.item() 
-  
-          # 3. Optimizer zero grad
-          optimizer.zero_grad()
-  
-          # 4. Loss backward
-          loss.backward()
-  
-          # 5. Optimizer step
-          optimizer.step()
-
         # Calculate and accumulate accuracy metric across all batches
         y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
         train_acc += (y_pred_class == y).sum().item()/len(y_pred)
@@ -145,6 +129,7 @@ def train(model: torch.nn.Module,
           optimizer: torch.optim.Optimizer,
           loss_fn: torch.nn.Module,
           epochs: int,
+          schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
           device: torch.device) -> Dict[str, List]:
     """Trains and tests a PyTorch model.
 
@@ -193,6 +178,7 @@ def train(model: torch.nn.Module,
                                           dataloader=train_dataloader,
                                           loss_fn=loss_fn,
                                           optimizer=optimizer,
+                                          schedular_lr = schedular_lr,
                                           device=device)
         test_loss, test_acc = test_step(model=model,
           dataloader=test_dataloader,
