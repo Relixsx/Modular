@@ -127,8 +127,8 @@ def train(model: torch.nn.Module,
           optimizer: torch.optim.Optimizer,
           loss_fn: torch.nn.Module,
           epochs: int,
-          schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
-          device: torch.device) -> Dict[str, List]:
+          device: torch.device,
+          schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None) -> Dict[str, List]:
     """Trains and tests a PyTorch model.
 
     Passes a target PyTorch models through train_step() and test_step()
