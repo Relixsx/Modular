@@ -10,7 +10,8 @@ def train_step(model: torch.nn.Module,
                dataloader: torch.utils.data.DataLoader, 
                loss_fn: torch.nn.Module, 
                optimizer: torch.optim.Optimizer,
-               device: torch.device) -> Tuple[float, float]:
+               device: torch.device,
+               schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None) -> Tuple[float, float]:
     """Trains a PyTorch model for a single epoch.
 
     Turns a target PyTorch model to training mode and then
@@ -41,21 +42,43 @@ def train_step(model: torch.nn.Module,
         # Send data to target device
         X, y = X.to(device), y.to(device)
 
-        # 1. Forward pass
-        y_pred = model(X)
-
-        # 2. Calculate  and accumulate loss
-        loss = loss_fn(y_pred, y)
-        train_loss += loss.item() 
-
-        # 3. Optimizer zero grad
-        optimizer.zero_grad()
-
-        # 4. Loss backward
-        loss.backward()
-
-        # 5. Optimizer step
-        optimizer.step()
+        if schedular_lr:
+    
+          # 1. Forward pass
+          y_pred = model(X)
+  
+          # 2. Calculate  and accumulate loss
+          loss = loss_fn(y_pred, y)
+          train_loss += loss.item() 
+  
+          # 3. Optimizer zero grad
+          optimizer.zero_grad()
+  
+          # 4. Loss backward
+          loss.backward()
+  
+          # 5. Optimizer step
+          optimizer.step()
+  
+          # Scheduler_Learning rate
+          schedular_lr.step()
+        else:
+          
+          # 1. Forward pass
+          y_pred = model(X)
+  
+          # 2. Calculate  and accumulate loss
+          loss = loss_fn(y_pred, y)
+          train_loss += loss.item() 
+  
+          # 3. Optimizer zero grad
+          optimizer.zero_grad()
+  
+          # 4. Loss backward
+          loss.backward()
+  
+          # 5. Optimizer step
+          optimizer.step()
 
         # Calculate and accumulate accuracy metric across all batches
         y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
