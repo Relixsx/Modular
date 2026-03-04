@@ -11,7 +11,7 @@ def train_step(model: torch.nn.Module,
                loss_fn: torch.nn.Module, 
                optimizer: torch.optim.Optimizer,
                device: torch.device,
-               schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None) -> Tuple[float, float]:
+               schedular_lr: torch.optim.lr_scheduler._LRScheduler = None) -> Tuple[float, float]:
     """Trains a PyTorch model for a single epoch.
 
     Turns a target PyTorch model to training mode and then
@@ -128,7 +128,7 @@ def train(model: torch.nn.Module,
           loss_fn: torch.nn.Module,
           epochs: int,
           device: torch.device,
-          schedular_lr: Optional[torch.optim.lr_scheduler._LRScheduler] = None) -> Dict[str, List]:
+          schedular_lr: torch.optim.lr_scheduler._LRScheduler = None) -> Dict[str, List]:
     """Trains and tests a PyTorch model.
 
     Passes a target PyTorch models through train_step() and test_step()
